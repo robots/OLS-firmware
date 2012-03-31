@@ -1,0 +1,28 @@
+#ifndef OLS_H_
+#define OLS_H_
+
+enum {
+	FLASH_ATMEL264 = 0,
+	FLASH_WINBOND256
+};
+
+enum {
+	ERROR_1V2 = 0b1,
+	ERROR_2V5 = 0b10,
+	ERROR_PROGB = 0b100,
+	ERROR_DONE = 0b1000,
+	ERROR_ROMID = 0b10000,
+	ERROR_UPDATE = 0b100000
+};
+
+enum {
+	CMD_ERROR = 0x00,
+	CMD_SUCESS = 0x01
+};
+
+enum {
+	MODE_OLS = 0,
+	MODE_UPGRADE
+};
+
+#endif
