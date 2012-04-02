@@ -20,9 +20,5 @@ enum {
 	CMD_SUCESS = 0x01
 };
 
-enum {
-	MODE_OLS = 0,
-	MODE_UPGRADE
-};
 
 #endif

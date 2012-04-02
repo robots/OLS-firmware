@@ -33,7 +33,9 @@ static void cmd_bootloader(unsigned char *args);
 static void cmd_normal(unsigned char *args);
 static void cmd_echo(unsigned char *args);
 
-static unsigned char selftestError = 0, FLASH_algo = 0;
+#pragma udata
+static unsigned char selftestError = 0;
+static unsigned char FLASH_algo = FLASH_ATMEL264;
 static unsigned short FLASH_pagesize = 264;
 
 #define ARY_SIZE(x) ((sizeof(x)/sizeof(x[0])))
@@ -61,22 +63,11 @@ void init(void);
 void delayms(unsigned int i);
 unsigned char HardwareSelftest(void);
 
-// globals
-//static void dbg_send(unsigned char *buf, unsigned char len)
-//{
-//	WaitInReady();
-//	cdc_In_buffer[0] = 0xAA;
-//	memcpy(&cdc_In_buffer[1], buf, len);
-//	cdc_In_buffer[len+1] = 0x55;
-//	cdc_In_buffer[len+2] = 0xFF;
-//	putUnsignedCharArrayUsbUsart(cdc_In_buffer, len+3);
-//}
+#pragma code
 
 void main(void)
 {
 	unsigned char cmd[4];
-	unsigned char c;
-	unsigned char mode = MODE_OLS;
 
 	init();
 
@@ -120,9 +111,6 @@ void main(void)
 
 	selftestError = 1; // TODO: remove when fpgaloop complete
 	if ((selftestError != 0) || (PIN_UPDATE == 0)) {
-		//update mode if the update button is pressed
-		mode = MODE_UPGRADE;
-
 		//return FPGA to reset
 		PROG_B_LOW();
 
