@@ -685,9 +685,6 @@ static void cdc_out_handler(void)
 		usbbuf.inBuf[usbbuf.write] = cdc_Out_buffer[cdc_Out_len];
 		usbbuf.write++;
 		usbbuf.write %= USB_FIFO_SIZE;
-		if (USB_FIFO_FULL(&usbbuf)) {
-			PIN_LED = 0;
-		}
 	}
 
 }

@@ -68,7 +68,6 @@ void fpgaLoop(void)
 {
 	unsigned char ch;
 
-
 	while (1) {
 		if (PIN_FPGA_DATAREADY == 1) {
 			if (getInReady()) {
@@ -159,7 +158,7 @@ void main(void)
 		setupFPGASPImaster(); //setup SPI to FPGA
 		fpgaLoop();
 	}
-	 
+
 	while (1) {
 #ifndef USB_INTERRUPTS
 		if (!TestUsbInterruptEnabled())
@@ -276,9 +275,10 @@ static void cmd_write(unsigned char *args)
 		crc -= ch;
 
 		spi(ch);
+
 	}
 	PIN_FLASH_CS = 1;
-	
+
 	usbbufgetbyte_block(&ch);
 
 	if (ch == crc) {
@@ -441,7 +441,7 @@ static void cmd_doselftest(unsigned char *args)
 static void cmd_bootloader(unsigned char *args)
 {
 	usb_deinit();
-	
+
 //FIXME: Y U no work?!
 	BootloaderJump();
 }
