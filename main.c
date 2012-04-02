@@ -64,6 +64,45 @@ void delayms(unsigned int i);
 unsigned char HardwareSelftest(void);
 
 #pragma code
+void fpgaLoop(void)
+{
+	unsigned char ch;
+
+
+	while (1) {
+		if (PIN_FPGA_DATAREADY == 1) {
+			if (getInReady()) {
+				//get SPI to buf
+				PIN_FPGA_CS = 0;
+				PIN_LED = 1;
+
+				cdc_In_len = 0;
+				while ((PIN_FPGA_DATAREADY == 1) && (cdc_In_len < 64)) {
+					cdc_In_buffer[cdc_In_len] = spi(0x7f); //spi(inbuf);
+					cdc_In_len++;
+
+					Nop(); //if the FPGA needs time to raise/lower the read flag, need to see a logic capture to be sure
+					Nop();
+				}
+
+				putUnsignedCharArrayUsbUsart(cdc_In_buffer, cdc_In_len);
+
+				PIN_LED = 0;
+				PIN_FPGA_CS = 1;
+			}
+		} else {
+			//test for bytes to send from USB to the FPGA
+			if ((usbbufavailable() >= 1) && usbbufgetbyte(&ch)) {
+				PIN_FPGA_CS = 0;
+				PIN_LED = 1;
+				SSP2BUF = ch;
+				while (SSP2STATbits.BF == 0);
+				PIN_LED = 0;
+				PIN_FPGA_CS = 1;
+			}
+		}
+	}
+}
 
 void main(void)
 {
@@ -109,7 +148,6 @@ void main(void)
 		selftestError = HardwareSelftest();
 	}
 
-	selftestError = 1; // TODO: remove when fpgaloop complete
 	if ((selftestError != 0) || (PIN_UPDATE == 0)) {
 		//return FPGA to reset
 		PROG_B_LOW();
@@ -119,7 +157,7 @@ void main(void)
 	} else {
 		PIN_LED = 0; //LED off
 		setupFPGASPImaster(); //setup SPI to FPGA
-		//TODO:fpgaloop();
+		fpgaLoop();
 	}
 	 
 	while (1) {
