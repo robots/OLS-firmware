@@ -560,7 +560,8 @@ void delayms(unsigned int i)
 	}
 }
 
-#pragma interruptlow InterruptHandlerLow nosave= PROD, PCLATH, PCLATU, TBLPTR, TBLPTRU, TABLAT, section (".tmpdata"), section("MATH_DATA")
+//#pragma interruptlow InterruptHandlerLow nosave= PROD, PCLATH, PCLATU, TBLPTR, TBLPTRU, TABLAT, section (".tmpdata"), section("MATH_DATA")
+#pragma interruptlow InterruptHandlerLow
 
 void InterruptHandlerLow(void)
 {
@@ -568,7 +569,8 @@ void InterruptHandlerLow(void)
 	ClearGlobalUsbInterruptFlag();
 }
 
-#pragma interrupt InterruptHandlerHigh nosave= PROD, PCLATH, PCLATU, TBLPTR, TBLPTRU, TABLAT, section (".tmpdata"), section("MATH_DATA")
+//#pragma interrupt InterruptHandlerHigh nosave= PROD, PCLATH, PCLATU, TBLPTR, TBLPTRU, TABLAT, section (".tmpdata"), section("MATH_DATA")
+#pragma interrupt InterruptHandlerHigh
 
 void InterruptHandlerHigh(void)
 {

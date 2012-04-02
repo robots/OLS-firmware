@@ -60,8 +60,8 @@ void usbbufservice(void);
 unsigned char usbbufgetbyte(unsigned char *c);
 unsigned char PEEKusbbufgetbyte(unsigned char *c);
 void usbbufflush(void);
-unsigned int usbbufavailable(void);
-unsigned char usbbufgetarray(unsigned char* c, unsigned short len);
+unsigned char usbbufavailable(void);
+unsigned char usbbufgetarray(unsigned char* c, unsigned char len);
 unsigned char usbbufgetbyte_block(unsigned char* c);
 
 BYTE getsUSBUSART(BYTE* buffer, BYTE len);
@@ -84,6 +84,7 @@ void initCDC(void);
 
 // globals
 extern BYTE cdc_In_buffer[64];
+extern BYTE cdc_In_len;
 extern BYTE *InPtr;
 extern BYTE *OutPtr;
 
