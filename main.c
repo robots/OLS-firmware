@@ -92,7 +92,7 @@ void fpgaLoop(void)
 			}
 		} else {
 			//test for bytes to send from USB to the FPGA
-			if ((usbbufavailable() >= 1) && usbbufgetbyte(&ch)) {
+			if (usbbufgetbyte(&ch)) {
 				PIN_FPGA_CS = 0;
 				PIN_LED = 1;
 				SSP2BUF = ch;
