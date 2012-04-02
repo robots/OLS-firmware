@@ -31,6 +31,7 @@ static void cmd_getselftest(unsigned char *args);
 static void cmd_doselftest(unsigned char *args);
 static void cmd_bootloader(unsigned char *args);
 static void cmd_normal(unsigned char *args);
+static void cmd_echo(unsigned char *args);
 
 static unsigned char selftestError = 0, FLASH_algo = 0;
 static unsigned short FLASH_pagesize = 264;
@@ -50,6 +51,7 @@ struct {
 	{ 0x06, cmd_getselftest},
 	{ 0x07, cmd_doselftest},
 	{ '$', cmd_bootloader},
+	{ 'a', cmd_echo},
 	{ 0xff, cmd_normal},
 };
 
@@ -146,16 +148,37 @@ void main(void)
 					break;
 				}
 			}
-
-			//dbg_usbbuf();
-
 		}
 
-//		usbbufgetbyte_block(&c);
-//		WaitInReady();
-//		cdc_In_buffer[0] = 'H';
-//		cdc_In_buffer[1] = c;
-//		putUnsignedCharArrayUsbUsart(cdc_In_buffer, 2);
+	}
+}
+
+static void cmd_echo(unsigned char *arg)
+{
+	unsigned short len;
+	unsigned short i;
+	unsigned short j;
+	unsigned char ch;
+
+	len = arg[2];
+
+	while (len > 0) {
+		j = len;
+		if (j > 64)
+			j = 64;
+
+		ch = 'j';
+
+		WaitInReady();
+
+		for (i = 0; i < j; i++) {
+			usbbufgetbyte_block(&ch);
+			cdc_In_buffer[i] = ch;
+		}
+
+		len = len - j;
+
+		putUnsignedCharArrayUsbUsart(cdc_In_buffer, j);
 
 	}
 }
