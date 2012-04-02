@@ -17,7 +17,6 @@ unsigned char spi(unsigned char c)
 
 void setupFPGASPImaster(void)
 {
-
 	//disable FLASH while we are master and FPGA is slave
 	PIN_FLASH_CS = 1; //CS high
 	TRIS_FLASH_CS = 0; //CS output
@@ -26,7 +25,34 @@ void setupFPGASPImaster(void)
 	PIN_FPGA_CS = 1; //CS high
 	TRIS_FPGA_CS = 0; //CS output
 
+#ifndef NEWSPI
+	//this is the old SPI route between the PIC and FPGA
+	//this uses the AUX pins and leaves the shared PIC->ROM->FPGA route unused
+	//this is compatible with bitstream 2.12 and earlier
+	//setup SPI to FPGA
+	//SS AUX2 RB1/RP4
+	//MISO AUX1 RB2/RP5
+	//MOSI CS RB3/RP6
+	//SCLK AUX0 RB4/RP7
 
+	//set MISO input pin (master)
+	TRIS_FPGA_MISO = 1; //direction input
+	RPINR21 = 5; // Set SDI2 (MISO) to RP5
+
+	//set MOSI output pin (master)
+	TRIS_FPGA_MOSI = 0;
+	PIN_FPGA_MOSI = 0;
+	RPOR6 = 9; //PPS output
+
+	//set SCK output pin (master)
+	TRIS_FPGA_SCK = 0;
+	PIN_FPGA_SCK = 0;
+	RPOR7 = 10; //PPS output
+#else
+	//this is the 'new' SPI connection
+	//it uses traces shared by the PIC, ROM, and FPGA
+	//there is less configuration changes in the PIC
+	//but most importantly it emulates a new project so they can share a bitstream
 	//setup SPI to FPGA
 	//TRIS_FLASH_MISO=1;
 	RPINR21 = 1; //PPS input
@@ -38,6 +64,7 @@ void setupFPGASPImaster(void)
 	TRIS_FLASH_SCK = 0;
 	PIN_FLASH_SCK = 0;
 	RPOR8 = 10; //PPS output
+#endif
 
 	//settings for master mode
 	//SSP2CON1=0b00100010; //SSPEN/ FOSC/64

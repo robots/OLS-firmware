@@ -88,26 +88,27 @@ C6 RP17 TX1
 #define BootloaderJump() _asm goto 0x16 _endasm
 
 
-#if 0
-#define TRIS_FPGA_AUX0      TRISBbits.TRISB4
-#define PIN_FPGA_AUX0       LATBbits.LATB4
-#define TRIS_FPGA_AUX1      TRISBbits.TRISB2
-#define PIN_FPGA_AUX1       PORTBbits.RB2
-#define TRIS_FPGA_MOSI      TRISBbits.TRISB3
-#define PIN_FPGA_MOSI       LATBbits.LATB3
+#ifndef NEWSPI
+#define TRIS_FPGA_SCK	TRISBbits.TRISB4
+#define PIN_FPGA_SCK	LATBbits.LATB4
+#define TRIS_FPGA_MISO	TRISBbits.TRISB2
+#define PIN_FPGA_MISO	PORTBbits.RB2
+#define TRIS_FPGA_MOSI	TRISBbits.TRISB3
+#define PIN_FPGA_MOSI	LATBbits.LATB3
 
-#define TRIS_FPGA_DATAREADY TRISBbits.TRISB1
-#define PIN_FPGA_DATAREADY  PORTBbits.RB1
+#define TRIS_FPGA_DATAREADY	TRISBbits.TRISB1
+#define PIN_FPGA_DATAREADY	PORTBbits.RB1
 
-#define TRIS_FPGA_CS        TRISAbits.TRISA1
-#define PIN_FPGA_CS         LATAbits.LATA1
+#define TRIS_FPGA_CS	TRISAbits.TRISA1
+#define PIN_FPGA_CS		LATAbits.LATA1
 #else
-#define TRIS_FPGA_DATAREADY TRISBbits.TRISB2
-#define PIN_FPGA_DATAREADY  PORTBbits.RB2
+#define TRIS_FPGA_DATAREADY	TRISBbits.TRISB2
+#define PIN_FPGA_DATAREADY	PORTBbits.RB2
 
-#define TRIS_FPGA_CS        TRISBbits.TRISB1
-#define PIN_FPGA_CS         PORTBbits.RB1
+#define TRIS_FPGA_CS	TRISBbits.TRISB1
+#define PIN_FPGA_CS		PORTBbits.RB1
 #endif
+
 
 #endif 
 
