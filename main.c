@@ -212,8 +212,7 @@ static void cmd_write(unsigned char *args)
 	unsigned char ch;
 	unsigned short i;
 
-	WaitInReady();
-	cdc_In_buffer[0] = CMD_ERROR;
+	unsigned char status = CMD_ERROR;
 
 	if (FLASH_algo == FLASH_ATMEL264) {
 		PIN_FLASH_CS = 0; //CS low
@@ -233,6 +232,7 @@ static void cmd_write(unsigned char *args)
 		spi(args[2]);
 	}
 
+	crc = 0;
 	for (i = 0; i < FLASH_pagesize; i++) {
 		usbbufgetbyte_block(&ch);
 		crc -= ch;
@@ -253,25 +253,35 @@ static void cmd_write(unsigned char *args)
 			spi(args[2]);
 			PIN_FLASH_CS = 1; //disable CS
 
-			while (1) {//wait for status to go ready
+			while (1) {
+				delayms(1);
 				PIN_FLASH_CS = 0;
 				spi(0xd7); //read status command
 				i = spi(0xff);
-				if ((i & 0b10000000) != 0) break;
+				if ((i & 0b10000000) != 0) {
+					status = CMD_SUCESS;
+					break;
+				}
 				PIN_FLASH_CS = 1;
 			}
 		} else if (FLASH_algo == FLASH_WINBOND256) {
-			while (1) {//wait for status to go ready
+			while (1) {
+				delayms(1);
 				PIN_FLASH_CS = 0;
 				spi(0x05); //read status command
 				i = spi(0xff);
-				if ((i & 0b1) == 0) break;
+				if ((i & 0b1) == 0) {
+					status = CMD_SUCESS;
+					break;
+				}
 				PIN_FLASH_CS = 1;
 			}
-			
 		}
-		cdc_In_buffer[0] = CMD_SUCESS;
 	}
+	PIN_FLASH_CS = 1;
+
+	WaitInReady();
+	cdc_In_buffer[0] = status;
 
 	putUnsignedCharArrayUsbUsart(cdc_In_buffer, 1);
 }
@@ -311,7 +321,6 @@ static void cmd_erase(unsigned char *args)
 	WaitInReady();
 	cdc_In_buffer[0] = CMD_ERROR;
 
-
 	if (FLASH_algo == FLASH_ATMEL264) {
 		PIN_FLASH_CS = 0; //CS low
 		spi(0xc7); //erase code, takes up to 12 seconds!
@@ -321,6 +330,7 @@ static void cmd_erase(unsigned char *args)
 		PIN_FLASH_CS = 1; //CS high
 
 		while (1) {
+			delayms(1);
 			PIN_FLASH_CS = 0;
 			spi(0xd7); //read status command
 			i = spi(0xff);
@@ -329,7 +339,7 @@ static void cmd_erase(unsigned char *args)
 				break;
 			}
 			PIN_FLASH_CS = 1;
-			Nop();
+
 		}
 
 	} else if (FLASH_algo == FLASH_WINBOND256) {
@@ -341,6 +351,7 @@ static void cmd_erase(unsigned char *args)
 		spi(0xc7); //erase code
 		PIN_FLASH_CS = 1; //CS high
 		while (1) {
+			delayms(1);
 			PIN_FLASH_CS = 0;
 			spi(0x05); //read status command
 			i = spi(0xff);
@@ -349,7 +360,6 @@ static void cmd_erase(unsigned char *args)
 				break;
 			}
 			PIN_FLASH_CS = 1;
-			Nop();
 		}
 		PIN_FLASH_CS = 1;
 
